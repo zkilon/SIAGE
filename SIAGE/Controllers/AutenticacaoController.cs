@@ -103,5 +103,59 @@ namespace SIAGE.Controllers
 			await HttpContext.SignOutAsync();
 			return RedirectToAction("Login");
 		}
+
+		public async Task<IActionResult> ChangePassword(int id)
+		{
+			try
+			{
+				if (ModelState.IsValid)
+				{
+					var user = await _context.GetUsuario(id);
+
+					if (user == null)
+						throw new Exception("Usuário não encontrado");
+
+
+					return PartialView("_changePassword");
+				}
+				return View();
+			}
+			catch (Exception ex)
+			{
+				ViewData["Error"] = ex.Message;
+				return View();
+			}
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> ChangePassword(ChangePasswordViewModel usuario)
+		{
+			try
+			{
+				var link = HttpContext.Request.Headers["Referer"].ToString();
+				if (ModelState.IsValid)
+				{
+					var user = await _context.GetUsuario(usuario.Id);
+					if (Criptografia.HashValue(usuario.Password) == user.Password)
+					{
+						var senha = Criptografia.HashValue(usuario.NewPassword);
+						user.Password = senha;
+						await _context.UpdateUsuario(user);
+					}
+					else
+					{
+						ViewData["Error"] = "A senha não atual não está correta";
+					}
+					
+				}
+				ViewData["Error"] = "Senha alterada com sucesso";
+				return RedirectToAction("Index", "Home");
+			}
+			catch (Exception ex)
+			{
+				ViewData["Error"] = ex.Message;
+				return View(usuario);
+			}
+		}
 	}
 }
