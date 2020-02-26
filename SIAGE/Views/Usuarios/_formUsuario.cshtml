@@ -1,0 +1,47 @@
+﻿@model Models.Entities.Usuario
+@using Utils.Enums;
+
+<div class="row">
+    <div class="col">
+        <div class="form-group">
+            <label asp-for="Name" class="control-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col">
+        <div class="form-group">
+            <label asp-for="Nickname" class="control-label"></label>
+            <input asp-for="Nickname" class="form-control" />
+            <span asp-validation-for="Nickname" class="text-danger"></span>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <div class="form-group">
+            <label asp-for="Email" class="control-label"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col">
+        <div class="form-group">
+            <label asp-for="FunctionId" class="control-label"></label>
+            <select asp-for="FunctionId" class="form-control select2" asp-items="Html.GetEnumSelectList<FunctionEnum>()">
+                <option value="">Selecione uma opção</option>
+            </select>
+            <span asp-validation-for="FunctionId" class="text-danger"></span>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <div class="form-group">
+            <label asp-for="BirthDate" class="control-label"></label>
+            <input asp-for="BirthDate" class="form-control date" type="text" />
+            <span asp-validation-for="BirthDate" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col"></div>
+</div>

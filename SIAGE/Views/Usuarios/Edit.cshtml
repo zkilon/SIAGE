@@ -1,0 +1,32 @@
+﻿@model Models.Entities.Usuario
+
+@{
+    ViewData["Title"] = "Editar Usuário";
+}
+
+<h4>@ViewData["Title"]</h4>
+<hr />
+@if (ViewData["Error"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        Error <strong>@ViewData["Error"]!</strong>
+    </div>
+}
+<div class="row">
+    <div class="col-md-10">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <partial name="_formUsuario" model="Model" />
+            <div class="form-group">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="Password" />
+                <input type="submit" value="Salvar" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-dark">Retornar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
