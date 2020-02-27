@@ -11,10 +11,11 @@ using Utils.Criptografia;
 using Settings.Password;
 using Settings.Email;
 using Microsoft.AspNetCore.Authorization;
+using Settings.Alert;
 
 namespace SIAGE.Controllers
 {
-	[Authorize]
+	[Authorize(Roles = "Gerente")]
 	public class UsuariosController : Controller
 	{
 		private readonly UsuariosServices _context;
@@ -44,11 +45,12 @@ namespace SIAGE.Controllers
 				usuario.Password = Criptografia.HashValue(senha);
 				await _context.CreateUsuario(usuario);
 				await EmailSenderAsync.SendEmailAsync(usuario.Email, senha);
+				TempData["alert"] = new PutAlert().GetAlert("Parabéns", "Usuário criado com sucesso!", "success");
 				return RedirectToAction("Index");
 			}
 			catch (Exception ex)
 			{
-				ViewData["Error"] = ex.Message;
+				TempData["alert"] = new PutAlert().GetAlert("Erro", ex.Message, "error");
 				return View(usuario);
 			}
 		}
@@ -65,7 +67,7 @@ namespace SIAGE.Controllers
 			}
 			catch (Exception ex)
 			{
-				ViewData["Error"] = ex.Message;
+				TempData["alert"] = new PutAlert().GetAlert("Erro", ex.Message, "error");
 				return RedirectToAction("Index");
 			}
 		}
@@ -79,13 +81,14 @@ namespace SIAGE.Controllers
 				if (ModelState.IsValid)
 				{
 					await _context.UpdateUsuario(usuario);
+					TempData["alert"] = new PutAlert().GetAlert("Parabéns", "Usuário atualizado com sucesso!", "success");
 					return RedirectToAction("Index");
 				}
 				return View(usuario);
 			}
 			catch (Exception ex)
 			{
-				ViewData["Error"] = ex.Message;
+				TempData["alert"] = new PutAlert().GetAlert("Erro", ex.Message, "error");
 				return View(usuario);
 			}
 		}
@@ -102,7 +105,7 @@ namespace SIAGE.Controllers
 			}
 			catch (Exception ex)
 			{
-				ViewData["Error"] = ex.Message;
+				TempData["alert"] = new PutAlert().GetAlert("Erro", ex.Message, "error");
 				return RedirectToAction("Index");
 			}
 		}
@@ -115,11 +118,12 @@ namespace SIAGE.Controllers
 			{
 				usuario = await _context.GetUsuario(id);
 				await _context.ExcluirUsuario(usuario);
+				TempData["alert"] = new PutAlert().GetAlert("Parabéns", "Usuário excluido com sucesso!", "success");
 				return RedirectToAction("Index");
 			}
 			catch (Exception ex)
 			{
-				ViewData["Error"] = ex.Message;
+				TempData["alert"] = new PutAlert().GetAlert("Erro", ex.Message, "error");
 				return RedirectToAction("Index");
 			}
 		}

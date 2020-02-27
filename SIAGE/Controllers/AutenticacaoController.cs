@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using Models.Entities;
 using Models.ViewModels;
 using Services.Entities;
+using Settings.Alert;
+using Settings.Password;
+using Settings.Email;
 using Utils.Criptografia;
 using Utils.Enums;
 
@@ -54,7 +57,7 @@ namespace SIAGE.Controllers
 			}
 			catch (Exception ex)
 			{
-				ViewData["Error"] = ex.Message;
+				TempData["alert"] = new PutAlert().GetAlert("Erro", ex.Message, "error");
 				return View(usuario);
 			}
 		}
@@ -94,7 +97,7 @@ namespace SIAGE.Controllers
 			}
 			catch (Exception ex)
 			{
-				ViewData["Error"] = ex.Message;
+				TempData["alert"] = new PutAlert().GetAlert("Erro", ex.Message, "error");
 			}
 		}
 
@@ -122,7 +125,7 @@ namespace SIAGE.Controllers
 			}
 			catch (Exception ex)
 			{
-				ViewData["Error"] = ex.Message;
+				TempData["alert"] = new PutAlert().GetAlert("Erro", ex.Message, "error");
 				return View();
 			}
 		}
@@ -133,28 +136,54 @@ namespace SIAGE.Controllers
 			try
 			{
 				var link = HttpContext.Request.Headers["Referer"].ToString();
-				if (ModelState.IsValid)
+				if (!string.IsNullOrEmpty(usuario.Password) && !string.IsNullOrEmpty(usuario.NewPassword) && !string.IsNullOrEmpty(usuario.ConfirmPassword))
 				{
-					var user = await _context.GetUsuario(usuario.Id);
-					if (Criptografia.HashValue(usuario.Password) == user.Password)
+					if (ModelState.IsValid)
 					{
-						var senha = Criptografia.HashValue(usuario.NewPassword);
-						user.Password = senha;
-						await _context.UpdateUsuario(user);
+
+						var user = await _context.GetUsuario(usuario.Id);
+						if (Criptografia.HashValue(usuario.Password) == user.Password)
+						{
+							var senha = Criptografia.HashValue(usuario.NewPassword);
+							user.Password = senha;
+							await _context.UpdateUsuario(user);
+							TempData["alert"] = new PutAlert().GetAlert("Parabéns", "Senha alterada com sucesso", "success");
+						}
+						else
+						{
+							TempData["alert"] = new PutAlert().GetAlert("Erro", "A Senha atual não está correta!", "info");
+						}
 					}
-					else
-					{
-						ViewData["Error"] = "A senha não atual não está correta";
-					}
-					
 				}
-				ViewData["Error"] = "Senha alterada com sucesso";
-				return RedirectToAction("Index", "Home");
+				else
+					TempData["alert"] = new PutAlert().GetAlert("Erro", "Os valores não podem estar em branco", "info");
+
+				return Redirect(link);
 			}
 			catch (Exception ex)
 			{
-				ViewData["Error"] = ex.Message;
+				TempData["alert"] = new PutAlert().GetAlert("Erro", "A Senha atual não está correta!", "info");
 				return View(usuario);
+			}
+		}
+
+		[HttpPost]
+		public async Task<JsonResult> ResetPassword(int id, Usuario usuario)
+		{
+			try
+			{
+				usuario = await _context.GetUsuario(id);
+				var senha = new PasswordSettings().NovaSenha();
+				usuario.Password = Criptografia.HashValue(senha);
+				await _context.UpdateUsuario(usuario);
+				await EmailSenderAsync.SendEmailAsync(usuario.Email, senha);
+				//TempData["alert"] = new PutAlert().GetAlert("Parabéns", "Senha alterada com sucesso!", "success");
+				return Json("Ok");
+			}
+			catch (Exception ex)
+			{
+				TempData["alert"] = new PutAlert().GetAlert("Erro", ex.Message, "info");
+				return Json("Error");
 			}
 		}
 	}

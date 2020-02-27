@@ -7,13 +7,6 @@
 
 <h1>@ViewData["Title"]</h1>
 
-@if (ViewData["Error"] != null)
-{
-    <div class="alert alert-danger" role="alert">
-        Error <strong>@ViewData["Error"]!</strong>
-    </div>
-}
-
 <p>
     <a asp-action="Create">Criar</a>
 </p>

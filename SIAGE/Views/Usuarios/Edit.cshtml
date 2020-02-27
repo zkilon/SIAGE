@@ -6,12 +6,6 @@
 
 <h4>@ViewData["Title"]</h4>
 <hr />
-@if (ViewData["Error"] != null)
-{
-    <div class="alert alert-danger" role="alert">
-        Error <strong>@ViewData["Error"]!</strong>
-    </div>
-}
 <div class="row">
     <div class="col-md-10">
         <form asp-action="Edit">
@@ -22,6 +16,7 @@
                 <input type="hidden" asp-for="Password" />
                 <input type="submit" value="Salvar" class="btn btn-primary" />
                 <a asp-action="Index" class="btn btn-dark">Retornar</a>
+                <input type="button" class="btn btn-info btn-reset-passwd" data-id="@Model.Id" value="Resetar Senha" />
             </div>
         </form>
     </div>
@@ -29,4 +24,25 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $('.btn-reset-passwd').click(function () {
+            var url = "/Autenticacao/ResetPassword/"; // the url to the controller
+            var id = $(this).attr('data-id'); // the id that's given to each button in the list
+            $.ajax({
+                url: url + id,
+                type: 'post',
+                beforeSend: function () {
+                    displayBusyIndicator();
+                },
+                success: function () {
+                    swal("Parabéns", "Senha atualizada com sucesso", "success");
+                    hideBusyIndicator();
+                },
+                error: function () {
+                    hideBusyIndicator();
+                }
+            });
+        });
+    </script>
 }

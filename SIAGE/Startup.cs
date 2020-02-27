@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Repositories.Context;
 using Services.Entities;
+using Settings.Alert;
 
 namespace SIAGE
 {
@@ -43,6 +44,14 @@ namespace SIAGE
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
+			app.UseStatusCodePages(async context =>
+			{
+				if (context.HttpContext.Response.StatusCode == 404 || context.HttpContext.Response.StatusCode == 403)
+				{
+					context.HttpContext.Response.Redirect("../Home/AcessDenied");
+				}
+			});
+
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
@@ -53,6 +62,7 @@ namespace SIAGE
 				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
+
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
 

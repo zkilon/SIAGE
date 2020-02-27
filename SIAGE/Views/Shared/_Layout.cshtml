@@ -13,6 +13,7 @@
     <link href="~/css/select2-bootstrap.css" rel="stylesheet" />
 </head>
 <body>
+    <partial name="_loading" />
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
@@ -43,12 +44,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Usuarios" asp-action="Index">Usuários</a>
-                        </li>
+                        @if (User.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).FirstOrDefault() == "Gerente")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Usuarios" asp-action="Index">Usuários</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -81,6 +82,8 @@
     <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
     <script src="~/js/jquery.mask.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
         $(document).ready(function () {
             $('.table').DataTable({
@@ -100,14 +103,41 @@
                 var url = "/Autenticacao/ChangePassword/"; // the url to the controller
                 var id = $(this).attr('data-id'); // the id that's given to each button in the list
                 $.get(url + id, function (data) {
-                    console.log(url + id);
-                    console.log(data);
                     $('.modal-content').html(data);
                     $('#ModalChangePassword').modal('show');
                 });
             });
         });
+
+        function displayBusyIndicator() {
+            $('.loading').show();
+        }
+
+        function hideBusyIndicator() {
+            $('.loading').hide();
+        }
+
+        $(window).on('beforeunload', function () {
+            displayBusyIndicator();
+        });
+
+        $(document).on('submit', 'form', function () {
+            displayBusyIndicator();
+        });
+
     </script>
+
+    @if (TempData["alert"] != null)
+    {
+        <script>
+            console.log('chegou');
+            $(document).ready(function () {
+            @Html.Raw(TempData["alert"])
+
+            });
+        </script>
+    }
+
     @RenderSection("Scripts", required: false)
 </body>
 </html>
