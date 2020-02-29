@@ -42,7 +42,7 @@
                     @Html.DisplayFor(modelItem => item.Nickname)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Email)
+                    <label>@item.Email</label>
                 </td>
                 <td>
                     @Enum.Parse(typeof(FunctionEnum), item.FunctionId.ToString())

@@ -8,7 +8,8 @@
     <title>@ViewData["Title"] - SIAGE</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
-    <link rel="stylesheet" href="~/lib/datatable/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="~/lib/datatable/datatables.min.css" />
+    <link rel="stylesheet" href="~/lib/datatable/DataTables/css/dataTables.bootstrap4.min.css" />
     <link href="~/lib/select2/select2.min.css" rel="stylesheet" />
     <link href="~/css/select2-bootstrap.css" rel="stylesheet" />
 </head>
@@ -80,7 +81,8 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/jquery.mask.min.js"></script>
-    <script src="~/lib/datatable/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatable/datatables.min.js"></script>
+    <script src="~/lib/datatable/DataTables/js/dataTables.bootstrap4.min.js"></script>
     <script src="~/lib/select2/select2.min.js"></script>
     <script src="~/lib/sweetalert/sweetalert.min.js"></script>
 
@@ -89,7 +91,7 @@
         $(document).ready(function () {
             $('.table').DataTable({
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.10.20/i18n/Portuguese-Brasil.json'
+                    url: 'lib/datatable/Portuguese-Brasil.json'
                 }
             });
 
